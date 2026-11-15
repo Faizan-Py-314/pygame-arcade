@@ -14,8 +14,11 @@ clock = pygame.time.Clock()
 running = True
 
 grid = [[(i, j) for i in range(0, 2000, 25)] for j in range(0, 1000, 25)]
+
 snack_x = randint(5, 35)
 snack_y = randint(5, 15)
+snack_body = [(snack_x, snack_y)]
+
 pos_x = 0
 pos_y = 0
 
@@ -46,17 +49,22 @@ while running:
                 pos_x = 1
 
         if event.type == timer:
-            snack_x += pos_x
-            snack_y += pos_y
+            new_x = snack_body[0][0] + pos_x
+            new_y = snack_body[0][1] + pos_y
 
-    snack_head = pygame.Rect(grid[snack_y][snack_x][0], grid[snack_y][snack_x][1], 25, 25)
-    pygame.draw.rect(screen, 'Red', snack_head)
+            snack_body.insert(0, (new_x, new_y))
+
+            if new_x == food_x and new_y == food_y:
+                food_x, food_y = get_random_food_pos()
+            else:
+                snack_body.pop()
 
     food = pygame.Rect(grid[food_y][food_x][0], grid[food_y][food_x][1], 25, 25)
     pygame.draw.rect(screen, 'yellow', food)
 
-    if snack_x == food_x and snack_y == food_y:
-        food_x, food_y = get_random_food_pos()
+    for parts in snack_body:
+        part = pygame.Rect(grid[parts[1]][parts[0]][0], grid[parts[1]][parts[0]][1], 25, 25)
+        pygame.draw.rect(screen, 'Red', part)
 
     pygame.display.update()
     clock.tick(60)
