@@ -8,10 +8,18 @@ def get_random_food_pos():
 
     return food_x, food_y
 
+def show_score():
+    score_surf = font_1.render(f"Score: {len(snack_body)-1}", True, 'White')
+    score_rect = score_surf.get_rect(topleft = (25, 25))
+
+    screen.blit(score_surf, score_rect)
+
+
 pygame.init()
 screen = pygame.display.set_mode((1000, 500))
 clock = pygame.time.Clock()
 running = True
+font_1 = pygame.font.Font(None, 40)
 
 grid = [[(i, j) for i in range(0, 2000, 25)] for j in range(0, 1000, 25)]
 
@@ -21,9 +29,10 @@ snack_body = [(snack_x, snack_y)]
 
 pos_x = 0
 pos_y = 0
+score = 0
 
 timer = pygame.USEREVENT + 1
-pygame.time.set_timer(timer, 200)
+pygame.time.set_timer(timer, 160)
 
 food_x, food_y = get_random_food_pos()
 
@@ -59,12 +68,20 @@ while running:
             else:
                 snack_body.pop()
 
+        if snack_body[0][0] >= 40 or snack_body[0][0] < 0 or snack_body[0][1] >= 20 or snack_body[0][1] < 0:
+            running = False
+
+        if snack_body[0] in snack_body[1:]:
+            running = False
+
     food = pygame.Rect(grid[food_y][food_x][0], grid[food_y][food_x][1], 25, 25)
     pygame.draw.rect(screen, 'yellow', food)
 
     for parts in snack_body:
         part = pygame.Rect(grid[parts[1]][parts[0]][0], grid[parts[1]][parts[0]][1], 25, 25)
         pygame.draw.rect(screen, 'Red', part)
+
+    show_score()
 
     pygame.display.update()
     clock.tick(60)
